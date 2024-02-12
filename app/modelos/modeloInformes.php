@@ -233,43 +233,46 @@ class modeloInformes extends conexion
         GROUP BY dim.id";
         $result['extralaboral'][$id]['dimenciones'] = $this->row($query);
 
-        $query = "SELECT c.id,c.cuestionario, SUM(res.peso_item) bruto, c.factor_a
-        FROM datos_generales dg
-        INNER JOIN respuestas res ON dg.id = res.datos_personales_id
-        INNER JOIN cuestionario c ON c.id = res.cuestionario_id
-        INNER JOIN cuestionario_dimencion_dominio cdd ON cdd.cuestionario_id = c.id
-        INNER JOIN dimenciones dim ON dim.id = cdd.dimencion_id 
-        INNER JOIN dimencion_item di ON dim.id = di.dimencion_id 
-        INNER JOIN items i ON i.id = di.item_id AND i.id = res.item_id
-        WHERE dg.id = $id AND c.id in(1,3) AND cdd.cuestionario_id in(1,3) AND dim.cuestionario_id in(1,3)
-        GROUP BY c.id";
+        // $query = "SELECT c.id,c.cuestionario, SUM(res.peso_item) bruto, c.factor_a
+        // FROM datos_generales dg
+        // INNER JOIN respuestas res ON dg.id = res.datos_personales_id
+        // INNER JOIN cuestionario c ON c.id = res.cuestionario_id
+        // INNER JOIN cuestionario_dimencion_dominio cdd ON cdd.cuestionario_id = c.id
+        // INNER JOIN dimenciones dim ON dim.id = cdd.dimencion_id 
+        // INNER JOIN dimencion_item di ON dim.id = di.dimencion_id 
+        // INNER JOIN items i ON i.id = di.item_id AND i.id = res.item_id
+        // WHERE dg.id = $id AND c.id in(1,3) AND cdd.cuestionario_id in(1,3) AND dim.cuestionario_id in(1,3)
+        // GROUP BY c.id";
+        $query = "SELECT SUM(peso_item) total FROM respuestas where cuestionario_id in(1,3) and datos_personales_id = $id GROUP BY cuestionario_id;";
         $result['extralaboral'][$id]['a'] = $this->row($query);
-        $suma = 0;
         if ($result['extralaboral'][$id]['a'][1] != null) {
+            $suma = 0;
             foreach ($result['extralaboral'][$id]['a'] as $extrataboral_a) {
-                $suma += $extrataboral_a['bruto'];
+                $suma += (int)$extrataboral_a['total'];
             }
-            $result['extralaboral'][$id]['calificacion_a'] = ($suma / $extrataboral_a['factor_a']) * 100;
+            $result['extralaboral'][$id]['calificacion_a'] = ($suma / 616) * 100;
+            //$result['extralaboral'][$id]['calificacion_a'] = $result['extralaboral'][$id]['a'][0]['total'];
         } else {
             $result['extralaboral'][$id]['calificacion_a'] = 0;
         }
-        $query = "SELECT c.id,c.cuestionario, SUM(res.peso_item) bruto, c.factor_b
-        FROM datos_generales dg
-        INNER JOIN respuestas res ON dg.id = res.datos_personales_id
-        INNER JOIN cuestionario c ON c.id = res.cuestionario_id
-        INNER JOIN cuestionario_dimencion_dominio cdd ON cdd.cuestionario_id = c.id
-        INNER JOIN dimenciones dim ON dim.id = cdd.dimencion_id 
-        INNER JOIN dimencion_item di ON dim.id = di.dimencion_id 
-        INNER JOIN items i ON i.id = di.item_id AND i.id = res.item_id
-        WHERE dg.id = $id AND c.id in(2,3) AND cdd.cuestionario_id in(2,3) AND dim.cuestionario_id in(2,3)
-        GROUP BY c.id";
+        // $query = "SELECT c.id,c.cuestionario, SUM(res.peso_item) bruto, c.factor_b
+        // FROM datos_generales dg
+        // INNER JOIN respuestas res ON dg.id = res.datos_personales_id
+        // INNER JOIN cuestionario c ON c.id = res.cuestionario_id
+        // INNER JOIN cuestionario_dimencion_dominio cdd ON cdd.cuestionario_id = c.id
+        // INNER JOIN dimenciones dim ON dim.id = cdd.dimencion_id 
+        // INNER JOIN dimencion_item di ON dim.id = di.dimencion_id 
+        // INNER JOIN items i ON i.id = di.item_id AND i.id = res.item_id
+        // WHERE dg.id = $id AND c.id in(2,3) AND cdd.cuestionario_id in(2,3) AND dim.cuestionario_id in(2,3)
+        // GROUP BY c.id";
+        $query = "SELECT SUM(peso_item) total FROM respuestas where cuestionario_id in(2, 3) and datos_personales_id = $id GROUP BY cuestionario_id;";
         $result['extralaboral'][$id]['b'] = $this->row($query);
-        $suma = 0;
-        if ($result['extralaboral'][$id]['b'][0] != null) {
+        if ($result['extralaboral'][$id]['b'][1] != null ) {
+            $result['extralaboral'][$id]['calificacion_b'] = $result['extralaboral'][$id]['b'][0]['total'];
             foreach ($result['extralaboral'][$id]['b'] as $extrataboral_b) {
-                $suma += (int)$extrataboral_b['bruto'];
+                $suma += (int)$extrataboral_b['total'];
             }
-            $result['extralaboral'][$id]['calificacion_b'] = ($suma / $extrataboral_b['factor_b']) * 100;
+            $result['extralaboral'][$id]['calificacion_b'] = ($suma / 512) * 100;
         } else {
             $result['extralaboral'][$id]['calificacion_b'] = 0;
         }
@@ -1030,9 +1033,9 @@ class modeloInformes extends conexion
                     $array[++$item.'forma_a' . $dimencion['dimencion']] = $this->verRiesgo(number_format($dimencion['puntaje_transformado_dim'], 1), 'dimencion', $dimencion['id'], 'forma_a', 'sin');
                     ++$contador;
                     if((($contador == 31) && ($datosInforme['forma_a'][$campos['id']]['dimenciones'][3]['dimencion'] != 'Relaci\u00f3n con los colaboradores (subordinados)')) || (($contador == 48) && ($datosInforme['forma_a'][$campos['id']]['dimenciones'][10]['dimencion'] != 'Demandas emocionales'))){
-                        $array[++$item.'forma_a'.(($contador != 30) ? 'Demandas emocionales' : 'Relación con los colaboradores')] = 'a';
+                        $array[++$item.'forma_a'.(($contador != 30) ? 'Demandas emocionales' : 'Relación con los colaboradores')] = '';
                         ++$contador;
-                        $array[++$item.'forma_a'.(($contador != 30) ? 'Demandas emocionales' : 'Relación con los colaboradores')] = 'a';
+                        $array[++$item.'forma_a'.(($contador != 30) ? 'Demandas emocionales' : 'Relación con los colaboradores')] = '';
                         ++$contador;
                         $atencion = 15;
                     }
@@ -1049,7 +1052,7 @@ class modeloInformes extends conexion
                 $array[++$item.'riesgo_a'] = $this->verRiesgo(number_format($datosInforme['forma_a'][$campos['id']]['calificacion'][0]['putaje_transformado_calificacion'], 1), 'calificacion', $key, 'forma_a', 'sin');
             } else {
                 for ($i = 25; $i <= 72; $i++) {
-                    $array[$i.'forma_a'] = 'a';
+                    $array[$i.'forma_a'] = '';
                 }
             }
             if (isset($datosInforme['forma_b'][$campos['id']]['dimenciones'][0])) {
@@ -1062,9 +1065,9 @@ class modeloInformes extends conexion
                     $array[++$item.'forma_b' . $dimencion['dimencion']] = $this->verRiesgo(number_format($dimencion['puntaje_transformado_dim'], 1), 'dimencion', $dimencion['id'], 'forma_b', 'sin');
                     ++$contador;
                     if((($item == 95) && ($datosInforme['forma_b'][$campos['id']]['dimenciones'][10]['dimencion'] != 'Demandas emocionales'))){
-                        $array[++$item.'forma_bDemandas emocionales'.$contador] = 'b';
+                        $array[++$item.'forma_bDemandas emocionales'.$contador] = '';
                         ++$contador;
-                        $array[++$item.'forma_bDemandas emocionales'.$contador] = 'b';
+                        $array[++$item.'forma_bDemandas emocionales'.$contador] = '';
                         ++$contador;
                         $atencion = 15;
                     }
@@ -1081,7 +1084,7 @@ class modeloInformes extends conexion
                 $array[++$item.'riesgo_b'] = $this->verRiesgo(number_format($datosInforme['forma_b'][$campos['id']]['calificacion'][0]['putaje_transformado_calificacion'], 1), 'calificacion', $key, 'forma_b', 'sin');
             } else {
                 for ($i = 73; $i <= 114; $i++) {
-                    $array['forma_b' . $i] = 'b';
+                    $array['forma_b' . $i] = '';
                 }
             }
             if (isset($datosInforme['extralaboral'][$campos['id']]['dimenciones'][0])) {
@@ -1091,28 +1094,28 @@ class modeloInformes extends conexion
                     $array[++$item.'extralaboral'.$dimencion['dimencion']] = $this->verRiesgo(number_format($dimencion['puntaje_transformado_dim'], 1), 'dimencion', $dimencion['id'], 'extralaboral', 'sin');
                 }
                 if ($datosInforme['extralaboral'][$campos['id']]['calificacion_a'] != 0) {
-                    $array[++$item.'extra_a'] = number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 1);
-                    $array[++$item.'extra_a'] = $this->verRiesgo(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 1), 'calificacion', $key, 'extralaboral_a', 'sin');
+                    $array[++$item.'extra_a'] = substr($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], '.') + 2);
+                    $array[++$item.'extra_a'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
                     if ($datosInforme['estres'][$campos['id']]['dimenciones'] != null) {
-                        $array[131] = number_format($datosInforme['estres'][$campos['id']]['dimenciones'], 1);
-                        $array[132] = $this->verRiesgo(number_format($datosInforme['estres'][$campos['id']]['dimenciones'], 1), 'calificacion', $key, 'estres_a', 'sin');
+                        $array[131] = substr($datosInforme['estres'][$campos['id']]['dimenciones'], 0, strpos($datosInforme['estres'][$campos['id']]['dimenciones'], '.') + 2);
+                        $array[132] = $this->verRiesgo(substr($datosInforme['estres'][$campos['id']]['dimenciones'], 0, strpos($datosInforme['estres'][$campos['id']]['dimenciones'], '.') + 2), 'calificacion', $key, 'estres_a', 'sin');
                     }
                 } else {
-                    $array[++$item.'extra_b'] = number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], 1);
-                    $array[++$item.'extra_b'] = $this->verRiesgo(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], 1), 'calificacion', $key, 'extralaboral_b', 'sin');
+                    $array[++$item.'extra_b'] = substr($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], '.') + 2);
+                    $array[++$item.'extra_b'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], '.') + 2), 'calificacion', $key, 'extralaboral_b', 'sin');
                     if ($datosInforme['estres'][$campos['id']]['dimenciones'] != null) {
-                        $array[131] = number_format($datosInforme['estres'][$campos['id']]['dimenciones'], 1);
-                        $array[132] = $this->verRiesgo(number_format($datosInforme['estres'][$campos['id']]['dimenciones'], 1), 'calificacion', $key, 'estres_b', 'sin');
+                        $array[131] = substr($datosInforme['estres'][$campos['id']]['dimenciones'], 0, strpos($datosInforme['estres'][$campos['id']]['dimenciones'], '.') + 2);
+                        $array[132] = $this->verRiesgo(substr($datosInforme['estres'][$campos['id']]['dimenciones'], 0, strpos($datosInforme['estres'][$campos['id']]['dimenciones'], '.') + 2), 'calificacion', $key, 'estres_b', 'sin');
                     }
                 }
             } else {
                 for ($i = 115; $i <= 130; $i++) {
-                    $array[$i] = 'E';
+                    $array[$i] = '';
                 }
             }
             if ($datosInforme['estres'][$campos['id']]['dimenciones'] == null) {
-                $array[131] = 'Es';
-                $array[132] = 'Es';
+                $array[131] = '';
+                $array[132] = '';
             }
             // ksort($array);
             fputcsv($fp, $array, ';');
