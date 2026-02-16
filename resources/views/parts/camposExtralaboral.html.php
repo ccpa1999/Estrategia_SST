@@ -43,17 +43,17 @@
                             <tr class="<?php echo $clase; ?> row">
                                 <td class="col-md-4"><?php echo $i . '.) ' . $item['item']; ?></td>
                                 <?php if ($item['rango'] == '0-4') : ?>
-                                    <td class="col-md-1 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="0"></td>
-                                    <td class="col-md-2 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="1"></td>
-                                    <td class="col-md-2 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="2"></td>
-                                    <td class="col-md-2 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="3"></td>
-                                    <td class="col-md-1 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="4"></td>
+                                    <td class="col-md-1 d-flex justify-content-center">0 : <input checked type="radio" name="items[<?php echo $item['id']; ?>]" value="0"></td>
+                                    <td class="col-md-2 d-flex justify-content-center">1 : <input type="radio" name="items[<?php echo $item['id']; ?>]" value="1"></td>
+                                    <td class="col-md-2 d-flex justify-content-center">2 : <input type="radio" name="items[<?php echo $item['id']; ?>]" value="2"></td>
+                                    <td class="col-md-2 d-flex justify-content-center">3 : <input type="radio" name="items[<?php echo $item['id']; ?>]" value="3"></td>
+                                    <td class="col-md-1 d-flex justify-content-center">4 : <input type="radio" name="items[<?php echo $item['id']; ?>]" value="4"></td>
                                 <?php else : ?>
-                                    <td class="col-md-1 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="4"></td>
-                                    <td class="col-md-2 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="3"></td>
-                                    <td class="col-md-2 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="2"></td>
-                                    <td class="col-md-2 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="1"></td>
-                                    <td class="col-md-1 d-flex justify-content-center"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="0"></td>
+                                    <td class="col-md-1 d-flex justify-content-center">4 : <input type="radio" name="items[<?php echo $item['id']; ?>]" value="4"></td>
+                                    <td class="col-md-2 d-flex justify-content-center">3 : <input type="radio" name="items[<?php echo $item['id']; ?>]" value="3"></td>
+                                    <td class="col-md-2 d-flex justify-content-center">2 : <input type="radio" name="items[<?php echo $item['id']; ?>]" value="2"></td>
+                                    <td class="col-md-2 d-flex justify-content-center">1 : <input type="radio" name="items[<?php echo $item['id']; ?>]" value="1"></td>
+                                    <td class="col-md-1 d-flex justify-content-center">0 : <input checked type="radio" name="items[<?php echo $item['id']; ?>]" value="0"></td>
                                 <?php endif; ?>
                             </tr>
                         <?php $i++;

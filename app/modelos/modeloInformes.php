@@ -250,9 +250,12 @@ class modeloInformes extends conexion
             foreach ($result['extralaboral'][$id]['a'] as $extrataboral_a) {
                 $suma += (int)$extrataboral_a['total'];
             }
+            $result['extralaboral'][$id]['calificacion_forma_a'] = $result['extralaboral'][$id]['a'][0]['total'];
+            $result['extralaboral'][$id]['calificacion_extra'] = $result['extralaboral'][$id]['a'][1]['total'];
+            $result['extralaboral'][$id]['calificacion'] = ($result['extralaboral'][$id]['a'][1]['total'] / 124) * 100;
             $result['extralaboral'][$id]['calificacion_a'] = ($suma / 616) * 100;
-            //$result['extralaboral'][$id]['calificacion_a'] = $result['extralaboral'][$id]['a'][0]['total'];
         } else {
+            $result['extralaboral'][$id]['calificacion'] = 0;
             $result['extralaboral'][$id]['calificacion_a'] = 0;
         }
         // $query = "SELECT c.id,c.cuestionario, SUM(res.peso_item) bruto, c.factor_b
@@ -850,9 +853,9 @@ class modeloInformes extends conexion
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 17.8 && $puntaje <= 25.6))) {
                         $riesgo = "Riesgo Medio";
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 25.7 && $puntaje <= 34.8))) {
-                        $riesgo = "Riesgo Medio";
+                        $riesgo = "Riesgo Alto";
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 34.9 && $puntaje <= 100))) {
-                        $riesgo = "Riesgo Medio";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
                 case 2:
@@ -863,9 +866,9 @@ class modeloInformes extends conexion
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 19.1 && $puntaje <= 29.8))) {
                         $riesgo = "Riesgo Medio";
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 29.9 && $puntaje <= 40.5))) {
-                        $riesgo = "Riesgo Medio";
+                        $riesgo = "Riesgo Alto";
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 40.6 && $puntaje <= 100))) {
-                        $riesgo = "Riesgo Medio";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
                 case 3:
@@ -876,9 +879,9 @@ class modeloInformes extends conexion
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 35.1 && $puntaje <= 41.5))) {
                         $riesgo = "Riesgo Medio";
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 41.6 && $puntaje <= 47.5))) {
-                        $riesgo = "Riesgo Medio";
+                        $riesgo = "Riesgo Alto";
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 47.6 && $puntaje <= 100))) {
-                        $riesgo = "Riesgo Medio";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
                 case 4:
@@ -889,9 +892,9 @@ class modeloInformes extends conexion
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 11.5 && $puntaje <= 20.5))) {
                         $riesgo = "Riesgo Medio";
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 20.6 && $puntaje <= 29.5))) {
-                        $riesgo = "Riesgo Medio";
+                        $riesgo = "Riesgo Alto";
                     } elseif ((($forma == 'forma_a' || $forma == 'forma_b') && ($puntaje >= 29.6 && $puntaje <= 100))) {
-                        $riesgo = "Riesgo Medio";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
             }
@@ -907,7 +910,7 @@ class modeloInformes extends conexion
                     } elseif ($puntaje >= 31.6 && $puntaje <= 38.0) {
                         $riesgo = "Riesgo Alto";
                     } elseif ($puntaje >= 38.1 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Alto";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
                 case 'forma_b':
@@ -920,20 +923,20 @@ class modeloInformes extends conexion
                     } elseif ($puntaje >= 31.3 && $puntaje <= 38.7) {
                         $riesgo = "Riesgo Alto";
                     } elseif ($puntaje >= 38.8 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Alto";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
                 case 'extralaboral_a':
-                    if ($puntaje >= 0.0 && $puntaje <= 18.8) {
+                    if ($puntaje >= 0.0 && $puntaje <= 11.3) {
                         $riesgo = "Sin riesgo o riesgo despreciable";
-                    } elseif ($puntaje >= 18.9 && $puntaje <= 24.4) {
+                    } elseif ($puntaje >= 11.4 && $puntaje <= 16.9) {
                         $riesgo = "Riesgo Bajo";
-                    } elseif ($puntaje >= 24.5 && $puntaje <= 29.5) {
+                    } elseif ($puntaje >= 17.0 && $puntaje <= 22.6) {
                         $riesgo = "Riesgo Medio";
-                    } elseif ($puntaje >= 29.6 && $puntaje <= 35.4) {
+                    } elseif ($puntaje >= 22.7 && $puntaje <= 29.0) {
                         $riesgo = "Riesgo Alto";
-                    } elseif ($puntaje >= 35.5 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Alto";
+                    } elseif ($puntaje >= 29.1 && $puntaje <= 100) {
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
                 case 'extralaboral_b':
@@ -946,7 +949,7 @@ class modeloInformes extends conexion
                     } elseif ($puntaje >= 29.6 && $puntaje <= 35.4) {
                         $riesgo = "Riesgo Alto";
                     } elseif ($puntaje >= 35.5 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Alto";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
                 case 'estres_a':
@@ -959,7 +962,7 @@ class modeloInformes extends conexion
                     } elseif ($puntaje >= 17.8 && $puntaje <= 25.0) {
                         $riesgo = "Riesgo Alto";
                     } elseif ($puntaje >= 25.1 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Alto";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
                 case 'estres_b':
@@ -972,7 +975,7 @@ class modeloInformes extends conexion
                     } elseif ($puntaje >= 17.1 && $puntaje <= 23.4) {
                         $riesgo = "Riesgo Alto";
                     } elseif ($puntaje >= 23.5 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Alto";
+                        $riesgo = "Riesgo Muy Alto";
                     }
                     break;
             }
@@ -1028,9 +1031,9 @@ class modeloInformes extends conexion
                 $contador = 24;
                 $atencion = 18;
                 foreach ($datosInforme['forma_a'][$campos['id']]['dimenciones'] as $key  => $dimencion) {
-                    $array[++$item.'forma_a' . $dimencion['dimencion']] = number_format($dimencion['puntaje_transformado_dim'], 1);
+                    $array[++$item.'forma_a' . $dimencion['dimencion']] = $this->calculoDeDeciaml(number_format($dimencion['puntaje_transformado_dim'], 2));
                     ++$contador;
-                    $array[++$item.'forma_a' . $dimencion['dimencion']] = $this->verRiesgo(number_format($dimencion['puntaje_transformado_dim'], 1), 'dimencion', $dimencion['id'], 'forma_a', 'sin');
+                    $array[++$item.'forma_a' . $dimencion['dimencion']] = $this->verRiesgo($this->calculoDeDeciaml(number_format($dimencion['puntaje_transformado_dim'], 2)), 'dimencion', $dimencion['id'], 'forma_a', 'sin');
                     ++$contador;
                     if((($contador == 31) && ($datosInforme['forma_a'][$campos['id']]['dimenciones'][3]['dimencion'] != 'Relaci\u00f3n con los colaboradores (subordinados)')) || (($contador == 48) && ($datosInforme['forma_a'][$campos['id']]['dimenciones'][10]['dimencion'] != 'Demandas emocionales'))){
                         $array[++$item.'forma_a'.(($contador != 30) ? 'Demandas emocionales' : 'Relación con los colaboradores')] = '';
@@ -1048,7 +1051,7 @@ class modeloInformes extends conexion
                         }
                     }
                 }
-                $array[++$item.'calificacion_a'] = number_format($datosInforme['forma_a'][$campos['id']]['calificacion'][0]['putaje_transformado_calificacion'], 1);
+                $array[++$item.'calificacion'] = number_format($datosInforme['forma_a'][$campos['id']]['calificacion'][0]['putaje_transformado_calificacion'], 1);
                 $array[++$item.'riesgo_a'] = $this->verRiesgo(number_format($datosInforme['forma_a'][$campos['id']]['calificacion'][0]['putaje_transformado_calificacion'], 1), 'calificacion', $key, 'forma_a', 'sin');
             } else {
                 for ($i = 25; $i <= 72; $i++) {
@@ -1060,9 +1063,9 @@ class modeloInformes extends conexion
                 $contador = 72;
                 $atencion = 15;
                 foreach ($datosInforme['forma_b'][$campos['id']]['dimenciones'] as $key  => $dimencion) {
-                    $array[++$item.'forma_b' . $dimencion['dimencion']] = number_format($dimencion['puntaje_transformado_dim'], 1);
+                    $array[++$item.'forma_b' . $dimencion['dimencion']] = $this->calculoDeDeciaml(number_format($dimencion['puntaje_transformado_dim'], 2));
                     ++$contador;
-                    $array[++$item.'forma_b' . $dimencion['dimencion']] = $this->verRiesgo(number_format($dimencion['puntaje_transformado_dim'], 1), 'dimencion', $dimencion['id'], 'forma_b', 'sin');
+                    $array[++$item.'forma_b' . $dimencion['dimencion']] = $this->verRiesgo($this->calculoDeDeciaml(number_format($dimencion['puntaje_transformado_dim'], 2)), 'dimencion', $dimencion['id'], 'forma_b', 'sin');
                     ++$contador;
                     if((($item == 95) && ($datosInforme['forma_b'][$campos['id']]['dimenciones'][10]['dimencion'] != 'Demandas emocionales'))){
                         $array[++$item.'forma_bDemandas emocionales'.$contador] = '';
@@ -1090,15 +1093,17 @@ class modeloInformes extends conexion
             if (isset($datosInforme['extralaboral'][$campos['id']]['dimenciones'][0])) {
                 $item = 114;
                 foreach ($datosInforme['extralaboral'][$campos['id']]['dimenciones'] as $key  => $dimencion) {
-                    $array[++$item.'extralaboral'.$dimencion['dimencion']] = number_format($dimencion['puntaje_transformado_dim'], 1);
-                    $array[++$item.'extralaboral'.$dimencion['dimencion']] = $this->verRiesgo(number_format($dimencion['puntaje_transformado_dim'], 1), 'dimencion', $dimencion['id'], 'extralaboral', 'sin');
+                    $ponderacionCompleta = $this->calculoDeDeciaml(number_format($dimencion['puntaje_transformado_dim'], 2));
+                    $array[++$item.'extralaboral'.$dimencion['dimencion']] = $ponderacionCompleta;
+                    $array[++$item.'extralaboral'.$dimencion['dimencion']] = $this->verRiesgo($ponderacionCompleta, 'dimencion', $dimencion['id'], 'extralaboral', 'sin');
                 }
-                if ($datosInforme['extralaboral'][$campos['id']]['calificacion_a'] != 0) {
-                    $array[++$item.'extra_a'] = substr($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], '.') + 2);
-                    $array[++$item.'extra_a'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
+                if ($datosInforme['extralaboral'][$campos['id']]['calificacion'] != 0) {
+                    $array[++$item.'extra_a'] = substr($datosInforme['extralaboral'][$campos['id']]['calificacion'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion'], '.') + 2);
+                    $array[++$item.'extra_a'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion'], '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
                     if ($datosInforme['estres'][$campos['id']]['dimenciones'] != null) {
-                        $array[131] = substr($datosInforme['estres'][$campos['id']]['dimenciones'], 0, strpos($datosInforme['estres'][$campos['id']]['dimenciones'], '.') + 2);
-                        $array[132] = $this->verRiesgo(substr($datosInforme['estres'][$campos['id']]['dimenciones'], 0, strpos($datosInforme['estres'][$campos['id']]['dimenciones'], '.') + 2), 'calificacion', $key, 'estres_a', 'sin');
+                        $total = $this->calculoDeDeciaml(number_format($datosInforme['estres'][$campos['id']]['dimenciones'], 2));
+                        $array[131] = $total;
+                        $array[132] = $this->verRiesgo($total, 'calificacion', $key, 'estres_a', 'sin');
                     }
                 } else {
                     $array[++$item.'extra_b'] = substr($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], '.') + 2);
@@ -1117,12 +1122,26 @@ class modeloInformes extends conexion
                 $array[131] = '';
                 $array[132] = '';
             }
+            $array[133] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_extra'], 2));
+            $array[134] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_forma_a'], 2));
+            $array[135] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2));
+            $array[136] = $this->verRiesgo(substr(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2), 0, strpos(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2), '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
             // ksort($array);
             fputcsv($fp, $array, ';');
             $array = array();
         }
         fclose($fp);
         return $ruta;
+    }
+
+    private function calculoDeDeciaml($numero){
+        $varNew = explode('.', $numero);
+        $decimal = $varNew[1];
+        $decimal = str_split($decimal);
+        $decimal = $decimal[0] . '.' . $decimal[1];
+        $decimalRedondeado = round($decimal);
+
+        return $varNew[0] . '.' . $decimalRedondeado;
     }
 
     private function cabeceras()
@@ -1192,7 +1211,7 @@ class modeloInformes extends conexion
             'Dimensión: Influencia del entorno extralaboral sobre el trabajo - Extralaboral (nivel de riesgo)', 'Dimensión: Desplazamiento vivienda - trabajo - vivienda - Extralaboral (puntaje transformado)',
             'Dimensión: Desplazamiento vivienda - trabajo - vivienda - Extralaboral (nivel de riesgo)', 'PUNTAJE TOTAL del cuestionario de factores de riesgo psicosocial extralaboral (puntaje transformado)',
             'PUNTAJE TOTAL del cuestionario de factores de riesgo psicosocial extralaboral (nivel de riesgo)', 'Puntaje total evaluación de estrés (puntaje transformado)',
-            'Puntaje total evaluación de estrés (nivel de riesgo)'
+            'Puntaje total evaluación de estrés (nivel de riesgo)', 'Puntaje Extra', 'Puntaje Forma A', 'Puntaje Intra y extra', 'Puntaje Intra y extra (nivel de riesgo)'
         );
         return $cabeceras;
     }

@@ -33,17 +33,17 @@
                                     <td class="col-md-2 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="9"></td>
                                     <td class="col-md-3 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="6"></td>
                                     <td class="col-md-3 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="3"></td>
-                                    <td class="col-md-1 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="0"></td>
+                                    <td class="col-md-1 d-flex justify-content-center p-4"><input type="radio" checked name="items[<?php echo $item['id']; ?>]" value="0"></td>
                                 <?php elseif ($item['rango'] == '6-0') : ?>
                                     <td class="col-md-2 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="6"></td>
                                     <td class="col-md-3 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="4"></td>
                                     <td class="col-md-3 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="2"></td>
-                                    <td class="col-md-1 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="0"></td>
+                                    <td class="col-md-1 d-flex justify-content-center p-4"><input type="radio" checked name="items[<?php echo $item['id']; ?>]" value="0"></td>
                                 <?php elseif ($item['rango'] == '3-0') : ?>
                                     <td class="col-md-2 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="3"></td>
                                     <td class="col-md-3 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="2"></td>
                                     <td class="col-md-3 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="1"></td>
-                                    <td class="col-md-1 d-flex justify-content-center p-4"><input type="radio" name="items[<?php echo $item['id']; ?>]" value="0"></td>
+                                    <td class="col-md-1 d-flex justify-content-center p-4"><input type="radio" checked name="items[<?php echo $item['id']; ?>]" value="0"></td>
                                 <?php endif; ?>
                             </tr>
                         <?php $i++;
