@@ -243,6 +243,13 @@ class modeloInformes extends conexion
         // INNER JOIN items i ON i.id = di.item_id AND i.id = res.item_id
         // WHERE dg.id = $id AND c.id in(1,3) AND cdd.cuestionario_id in(1,3) AND dim.cuestionario_id in(1,3)
         // GROUP BY c.id";
+        //Extralaboral
+        $query = "SELECT SUM(peso_item) total FROM respuestas where cuestionario_id in(3) and datos_personales_id = $id GROUP BY cuestionario_id;";
+        $bruto = $this->row($query)[0]['total'];
+        $result['extralaboral'][$id]['bruto'] = $bruto;
+        $result['extralaboral'][$id]['total'] = (($bruto) / 124) * 100;
+
+        //Extralaboral A
         $query = "SELECT SUM(peso_item) total FROM respuestas where cuestionario_id in(1,3) and datos_personales_id = $id GROUP BY cuestionario_id;";
         $result['extralaboral'][$id]['a'] = $this->row($query);
         if ($result['extralaboral'][$id]['a'][1] != null) {
@@ -250,33 +257,30 @@ class modeloInformes extends conexion
             foreach ($result['extralaboral'][$id]['a'] as $extrataboral_a) {
                 $suma += (int)$extrataboral_a['total'];
             }
-            $result['extralaboral'][$id]['calificacion_forma_a'] = $result['extralaboral'][$id]['a'][0]['total'];
-            $result['extralaboral'][$id]['calificacion_extra'] = $result['extralaboral'][$id]['a'][1]['total'];
-            $result['extralaboral'][$id]['calificacion'] = ($result['extralaboral'][$id]['a'][1]['total'] / 124) * 100;
+            $result['extralaboral'][$id]['bruto_a'] = $result['extralaboral'][$id]['a'][0]['total'];
+            $result['extralaboral'][$id]['bruto_extra'] = $result['extralaboral'][$id]['a'][1]['total'];
+            // $result['extralaboral'][$id]['calificacion'] = ($result['extralaboral'][$id]['a'][1]['total'] / 124) * 100;
             $result['extralaboral'][$id]['calificacion_a'] = ($suma / 616) * 100;
         } else {
             $result['extralaboral'][$id]['calificacion'] = 0;
             $result['extralaboral'][$id]['calificacion_a'] = 0;
         }
-        // $query = "SELECT c.id,c.cuestionario, SUM(res.peso_item) bruto, c.factor_b
-        // FROM datos_generales dg
-        // INNER JOIN respuestas res ON dg.id = res.datos_personales_id
-        // INNER JOIN cuestionario c ON c.id = res.cuestionario_id
-        // INNER JOIN cuestionario_dimencion_dominio cdd ON cdd.cuestionario_id = c.id
-        // INNER JOIN dimenciones dim ON dim.id = cdd.dimencion_id 
-        // INNER JOIN dimencion_item di ON dim.id = di.dimencion_id 
-        // INNER JOIN items i ON i.id = di.item_id AND i.id = res.item_id
-        // WHERE dg.id = $id AND c.id in(2,3) AND cdd.cuestionario_id in(2,3) AND dim.cuestionario_id in(2,3)
-        // GROUP BY c.id";
+
+        //Extralaboral B
         $query = "SELECT SUM(peso_item) total FROM respuestas where cuestionario_id in(2, 3) and datos_personales_id = $id GROUP BY cuestionario_id;";
         $result['extralaboral'][$id]['b'] = $this->row($query);
         if ($result['extralaboral'][$id]['b'][1] != null ) {
             $result['extralaboral'][$id]['calificacion_b'] = $result['extralaboral'][$id]['b'][0]['total'];
+            $suma = 0;
             foreach ($result['extralaboral'][$id]['b'] as $extrataboral_b) {
                 $suma += (int)$extrataboral_b['total'];
             }
+            $result['extralaboral'][$id]['calificacion_forma_a'] = $result['extralaboral'][$id]['b'][0]['total'];
+            $result['extralaboral'][$id]['calificacion_extra'] = $result['extralaboral'][$id]['b'][1]['total'];
+            $result['extralaboral'][$id]['calificacion'] = ($result['extralaboral'][$id]['b'][1]['total'] / 124) * 100;
             $result['extralaboral'][$id]['calificacion_b'] = ($suma / 512) * 100;
-        } else {
+        } else {    
+            $result['extralaboral'][$id]['calificacion'] = 0;
             $result['extralaboral'][$id]['calificacion_b'] = 0;
         }
 
@@ -778,68 +782,143 @@ class modeloInformes extends conexion
                     }
                     break;
                 case 41:
-                    if ($puntaje >= 0.0 && $puntaje <= 0.9) {
-                        $riesgo = "Sin riesgo o riesgo despreciable";
-                    } elseif ($puntaje >= 1.0 && $puntaje <= 10.0) {
-                        $riesgo = "Riesgo Bajo";
-                    } elseif ($puntaje >= 10.1 && $puntaje <= 20.0) {
-                        $riesgo = "Riesgo Medio";
-                    } elseif ($puntaje >= 20.1 && $puntaje <= 30.0) {
-                        $riesgo = "Riesgo Alto";
-                    } elseif ($puntaje >= 30.1 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Muy Alto";
+                    if ($forma == 'forma_a') {
+                        if ($puntaje >= 0.0 && $puntaje <= 0.9) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 1.0 && $puntaje <= 10.0) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 10.1 && $puntaje <= 20.0) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 20.1 && $puntaje <= 30.0) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 30.1 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
+                    }
+                    if ($forma == 'forma_b') {
+                        if ($puntaje >= 0.0 && $puntaje <= 5.0) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 5.1 && $puntaje <= 15.0) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 15.1 && $puntaje <= 25.0) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 25.1 && $puntaje <= 35.0) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 35.1 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
                     }
                     break;
                 case 42:
-                    if ($puntaje >= 0.0 && $puntaje <= 8.3) {
-                        $riesgo = "Sin riesgo o riesgo despreciable";
-                    } elseif ($puntaje >= 8.4 && $puntaje <= 25.0) {
-                        $riesgo = "Riesgo Bajo";
-                    } elseif ($puntaje >= 25.1 && $puntaje <= 33.3) {
-                        $riesgo = "Riesgo Medio";
-                    } elseif ($puntaje >= 33.4 && $puntaje <= 50.0) {
-                        $riesgo = "Riesgo Alto";
-                    } elseif ($puntaje >= 50.1 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Muy Alto";
+                    if ($forma == 'forma_a') {
+                        if ($puntaje >= 0.0 && $puntaje <= 8.3) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 8.4 && $puntaje <= 25.0) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 25.1 && $puntaje <= 33.3) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 33.4 && $puntaje <= 50.0) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 50.1 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
+                    }
+                    if ($forma == 'forma_b') {
+                        if ($puntaje >= 0.0 && $puntaje <= 16.7) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 16.8 && $puntaje <= 25.0) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 25.1 && $puntaje <= 41.7) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 41.8 && $puntaje <= 50.0) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 50.1 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
                     }
                     break;
                 case 43:
-                    if ($puntaje >= 0.0 && $puntaje <= 5.6) {
-                        $riesgo = "Sin riesgo o riesgo despreciable";
-                    } elseif ($puntaje >= 5.7 && $puntaje <= 11.1) {
-                        $riesgo = "Riesgo Bajo";
-                    } elseif ($puntaje >= 11.2 && $puntaje <= 13.9) {
-                        $riesgo = "Riesgo Medio";
-                    } elseif ($puntaje >= 14.0 && $puntaje <= 22.2) {
-                        $riesgo = "Riesgo Alto";
-                    } elseif ($puntaje >= 22.3 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Muy Alto";
+                    if ($forma == 'forma_a') {
+                        if ($puntaje >= 0.0 && $puntaje <= 5.6) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 5.7 && $puntaje <= 11.1) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 11.2 && $puntaje <= 13.9) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 14.0 && $puntaje <= 22.2) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 22.3 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
+                    }
+                    if ($forma == 'forma_b') {
+                        if ($puntaje >= 0.0 && $puntaje <= 5.6) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 5.7 && $puntaje <= 11.1) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 11.2 && $puntaje <= 16.7) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 16.8 && $puntaje <= 27.8) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 27.9 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
                     }
                     break;
                 case 44:
-                    if ($puntaje >= 0.0 && $puntaje <= 8.3) {
-                        $riesgo = "Sin riesgo o riesgo despreciable";
-                    } elseif ($puntaje >= 8.4 && $puntaje <= 16.7) {
-                        $riesgo = "Riesgo Bajo";
-                    } elseif ($puntaje >= 16.8 && $puntaje <= 25.0) {
-                        $riesgo = "Riesgo Medio";
-                    } elseif ($puntaje >= 25.1 && $puntaje <= 41.7) {
-                        $riesgo = "Riesgo Alto";
-                    } elseif ($puntaje >= 41.8 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Muy Alto";
+                    if ($forma == 'forma_a') {
+                        if ($puntaje >= 0.0 && $puntaje <= 8.3) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 8.4 && $puntaje <= 16.7) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 16.8 && $puntaje <= 25.0) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 25.1 && $puntaje <= 41.7) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 41.8 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
+                    }
+                    if ($forma == 'forma_b') {
+                        if ($puntaje >= 0.0 && $puntaje <= 0.9) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 1.0 && $puntaje <= 16.7) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 16.8 && $puntaje <= 25.0) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 25.1 && $puntaje <= 41.7) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 41.8 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
                     }
                     break;
                 case 45:
-                    if ($puntaje >= 0.0 && $puntaje <= 0.9) {
-                        $riesgo = "Sin riesgo o riesgo despreciable";
-                    } elseif ($puntaje >= 1.0 && $puntaje <= 12.5) {
-                        $riesgo = "Riesgo Bajo";
-                    } elseif ($puntaje >= 12.6 && $puntaje <= 25.0) {
-                        $riesgo = "Riesgo Medio";
-                    } elseif ($puntaje >= 25.1 && $puntaje <= 43.8) {
-                        $riesgo = "Riesgo Alto";
-                    } elseif ($puntaje >= 43.9 && $puntaje <= 100) {
-                        $riesgo = "Riesgo Muy Alto";
+                    if ($forma == 'forma_a') {
+                        if ($puntaje >= 0.0 && $puntaje <= 0.9) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 1.0 && $puntaje <= 12.5) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 12.6 && $puntaje <= 25.0) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 25.1 && $puntaje <= 43.8) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 43.9 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
+                    }
+                    if ($forma == 'forma_b') {
+                        if ($puntaje >= 0.0 && $puntaje <= 0.9) {
+                            $riesgo = "Sin riesgo o riesgo despreciable";
+                        } elseif ($puntaje >= 1.0 && $puntaje <= 12.5) {
+                            $riesgo = "Riesgo Bajo";
+                        } elseif ($puntaje >= 12.6 && $puntaje <= 25.0) {
+                            $riesgo = "Riesgo Medio";
+                        } elseif ($puntaje >= 25.1 && $puntaje <= 43.8) {
+                            $riesgo = "Riesgo Alto";
+                        } elseif ($puntaje >= 43.9 && $puntaje <= 100) {
+                            $riesgo = "Riesgo Muy Alto";
+                        }
                     }
                     break;
             }
@@ -926,7 +1005,7 @@ class modeloInformes extends conexion
                         $riesgo = "Riesgo Muy Alto";
                     }
                     break;
-                case 'extralaboral_a':
+                case 'extralaboral':
                     if ($puntaje >= 0.0 && $puntaje <= 11.3) {
                         $riesgo = "Sin riesgo o riesgo despreciable";
                     } elseif ($puntaje >= 11.4 && $puntaje <= 16.9) {
@@ -936,6 +1015,19 @@ class modeloInformes extends conexion
                     } elseif ($puntaje >= 22.7 && $puntaje <= 29.0) {
                         $riesgo = "Riesgo Alto";
                     } elseif ($puntaje >= 29.1 && $puntaje <= 100) {
+                        $riesgo = "Riesgo Muy Alto";
+                    }
+                    break;
+                case 'extralaboral_a':
+                    if ($puntaje >= 0.0 && $puntaje <= 18.8) {
+                        $riesgo = "Sin riesgo o riesgo despreciable";
+                    } elseif ($puntaje >= 18.9 && $puntaje <= 24.4) {
+                        $riesgo = "Riesgo Bajo";
+                    } elseif ($puntaje >= 24.5 && $puntaje <= 29.5) {
+                        $riesgo = "Riesgo Medio";
+                    } elseif ($puntaje >= 29.6 && $puntaje <= 35.4) {
+                        $riesgo = "Riesgo Alto";
+                    } elseif ($puntaje >= 35.5 && $puntaje <= 100) {
                         $riesgo = "Riesgo Muy Alto";
                     }
                     break;
@@ -1026,6 +1118,7 @@ class modeloInformes extends conexion
             $array[22] = $campos['tipo_contrato'];
             $array[23] = $campos['horas_diarias'];
             $array[24] = $campos['tipo_salario'];
+            $forma = (isset($datosInforme['forma_a'][$campos['id']]['dimenciones'][0])) ? 'a' : 'b';
             if (isset($datosInforme['forma_a'][$campos['id']]['dimenciones'][0])) {
                 $item = 24;
                 $contador = 24;
@@ -1095,11 +1188,14 @@ class modeloInformes extends conexion
                 foreach ($datosInforme['extralaboral'][$campos['id']]['dimenciones'] as $key  => $dimencion) {
                     $ponderacionCompleta = $this->calculoDeDeciaml(number_format($dimencion['puntaje_transformado_dim'], 2));
                     $array[++$item.'extralaboral'.$dimencion['dimencion']] = $ponderacionCompleta;
-                    $array[++$item.'extralaboral'.$dimencion['dimencion']] = $this->verRiesgo($ponderacionCompleta, 'dimencion', $dimencion['id'], 'extralaboral', 'sin');
+                    $array[++$item.'extralaboral'.$dimencion['dimencion']] = $this->verRiesgo($ponderacionCompleta, 'dimencion', $dimencion['id'], 'forma_' . $forma, 'sin');
                 }
-                if ($datosInforme['extralaboral'][$campos['id']]['calificacion'] != 0) {
-                    $array[++$item.'extra_a'] = substr($datosInforme['extralaboral'][$campos['id']]['calificacion'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion'], '.') + 2);
-                    $array[++$item.'extra_a'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion'], '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
+                // Extralaboral
+                $array[++$item] = $this->calculoDeDeciaml($datosInforme['extralaboral'][$campos['id']]['total']);
+                $array[++$item] = $this->verRiesgo($this->calculoDeDeciaml($datosInforme['extralaboral'][$campos['id']]['total']), 'calificacion', $key, 'extralaboral_'. $forma, 'sin');
+                if ($datosInforme['extralaboral'][$campos['id']]['calificacion_a'] != 0) {
+                    $array[++$item.'extra_a'] = $this->calculoDeDeciaml($datosInforme['extralaboral'][$campos['id']]['calificacion_a']);
+                    $array[++$item.'extra_a'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
                     if ($datosInforme['estres'][$campos['id']]['dimenciones'] != null) {
                         $total = $this->calculoDeDeciaml(number_format($datosInforme['estres'][$campos['id']]['dimenciones'], 2));
                         $array[131] = $total;
@@ -1122,10 +1218,10 @@ class modeloInformes extends conexion
                 $array[131] = '';
                 $array[132] = '';
             }
-            $array[133] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_extra'], 2));
-            $array[134] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_forma_a'], 2));
-            $array[135] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2));
-            $array[136] = $this->verRiesgo(substr(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2), 0, strpos(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2), '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
+            // $array[133] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_extra'], 2));
+            // $array[134] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_forma_a'], 2));
+            // $array[135] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2));
+            // $array[136] = $this->verRiesgo(substr(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2), 0, strpos(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2), '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
             // ksort($array);
             fputcsv($fp, $array, ';');
             $array = array();
@@ -1210,8 +1306,11 @@ class modeloInformes extends conexion
             'Dimensión: Influencia del entorno extralaboral sobre el trabajo - Extralaboral (puntaje transformado)',
             'Dimensión: Influencia del entorno extralaboral sobre el trabajo - Extralaboral (nivel de riesgo)', 'Dimensión: Desplazamiento vivienda - trabajo - vivienda - Extralaboral (puntaje transformado)',
             'Dimensión: Desplazamiento vivienda - trabajo - vivienda - Extralaboral (nivel de riesgo)', 'PUNTAJE TOTAL del cuestionario de factores de riesgo psicosocial extralaboral (puntaje transformado)',
-            'PUNTAJE TOTAL del cuestionario de factores de riesgo psicosocial extralaboral (nivel de riesgo)', 'Puntaje total evaluación de estrés (puntaje transformado)',
-            'Puntaje total evaluación de estrés (nivel de riesgo)', 'Puntaje Extra', 'Puntaje Forma A', 'Puntaje Intra y extra', 'Puntaje Intra y extra (nivel de riesgo)'
+            'PUNTAJE TOTAL del cuestionario de factores de riesgo psicosocial extralaboral (nivel de riesgo)', 
+            'Puntaje total de le evaluación general de factores de riesgo psicosocial (suma de intra y extralaboral)', 'Puntaje total de le evaluación general de factores de riesgo psicosocial (suma de intra y extralaboral) (nivel de riesgo)', 
+            'Puntaje total evaluación de estrés (puntaje transformado)', 'Puntaje total evaluación de estrés (nivel de riesgo)'
+            // 'PUNTAJE TOTAL del cuestionario de factores de riesgo psicosocial extralaboral (nivel de riesgo)', 'Puntaje total evaluación de estrés (puntaje transformado)',
+            // 'Puntaje total evaluación de estrés (nivel de riesgo)', 'Puntaje Extra', 'Puntaje Forma A', 'Puntaje Intra y extra', 'Puntaje Intra y extra (nivel de riesgo)'
         );
         return $cabeceras;
     }
