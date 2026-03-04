@@ -1005,7 +1005,7 @@ class modeloInformes extends conexion
                         $riesgo = "Riesgo Muy Alto";
                     }
                     break;
-                case 'extralaboral':
+                case 'extralaboral_a':
                     if ($puntaje >= 0.0 && $puntaje <= 11.3) {
                         $riesgo = "Sin riesgo o riesgo despreciable";
                     } elseif ($puntaje >= 11.4 && $puntaje <= 16.9) {
@@ -1018,7 +1018,21 @@ class modeloInformes extends conexion
                         $riesgo = "Riesgo Muy Alto";
                     }
                     break;
-                case 'extralaboral_a':
+                case 'extralaboral_b':
+                    if ($puntaje >= 0.0 && $puntaje <= 12.9) {
+                        $riesgo = "Sin riesgo o riesgo despreciable";
+                    } elseif ($puntaje >= 13.0 && $puntaje <= 17.7) {
+                        $riesgo = "Riesgo Bajo";
+                    } elseif ($puntaje >= 17.8 && $puntaje <= 24.2) {
+                        $riesgo = "Riesgo Medio";
+                    } elseif ($puntaje >= 24.3 && $puntaje <= 32.3) {
+                        $riesgo = "Riesgo Alto";
+                    } elseif ($puntaje >= 32.4 && $puntaje <= 100) {
+                        $riesgo = "Riesgo Muy Alto";
+                    }
+                    break;
+                //Extralaboral Total
+                case 'extralaboral_forma_a':
                     if ($puntaje >= 0.0 && $puntaje <= 18.8) {
                         $riesgo = "Sin riesgo o riesgo despreciable";
                     } elseif ($puntaje >= 18.9 && $puntaje <= 24.4) {
@@ -1031,7 +1045,7 @@ class modeloInformes extends conexion
                         $riesgo = "Riesgo Muy Alto";
                     }
                     break;
-                case 'extralaboral_b':
+                case 'extralaboral_forma_b':
                     if ($puntaje >= 0.0 && $puntaje <= 19.9) {
                         $riesgo = "Sin riesgo o riesgo despreciable";
                     } elseif ($puntaje >= 20.0 && $puntaje <= 24.8) {
@@ -1191,11 +1205,11 @@ class modeloInformes extends conexion
                     $array[++$item.'extralaboral'.$dimencion['dimencion']] = $this->verRiesgo($ponderacionCompleta, 'dimencion', $dimencion['id'], 'forma_' . $forma, 'sin');
                 }
                 // Extralaboral
-                $array[++$item] = $this->calculoDeDeciaml($datosInforme['extralaboral'][$campos['id']]['total']);
-                $array[++$item] = $this->verRiesgo($this->calculoDeDeciaml($datosInforme['extralaboral'][$campos['id']]['total']), 'calificacion', $key, 'extralaboral_'. $forma, 'sin');
+                $array[++$item.'extralaboralPtaje'] = $this->calculoDeDeciaml($datosInforme['extralaboral'][$campos['id']]['total']);
+                $array[++$item.'extralaboralRiesgo'] = $this->verRiesgo($this->calculoDeDeciaml($datosInforme['extralaboral'][$campos['id']]['total']), 'calificacion', $key, 'extralaboral_'.$forma, 'sin');
                 if ($datosInforme['extralaboral'][$campos['id']]['calificacion_a'] != 0) {
                     $array[++$item.'extra_a'] = $this->calculoDeDeciaml($datosInforme['extralaboral'][$campos['id']]['calificacion_a']);
-                    $array[++$item.'extra_a'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
+                    $array[++$item.'extra_a'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], '.') + 2), 'calificacion', $key, 'extralaboral_forma_a', 'sin');
                     if ($datosInforme['estres'][$campos['id']]['dimenciones'] != null) {
                         $total = $this->calculoDeDeciaml(number_format($datosInforme['estres'][$campos['id']]['dimenciones'], 2));
                         $array[131] = $total;
@@ -1203,7 +1217,7 @@ class modeloInformes extends conexion
                     }
                 } else {
                     $array[++$item.'extra_b'] = substr($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], '.') + 2);
-                    $array[++$item.'extra_b'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], '.') + 2), 'calificacion', $key, 'extralaboral_b', 'sin');
+                    $array[++$item.'extra_b'] = $this->verRiesgo(substr($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], 0, strpos($datosInforme['extralaboral'][$campos['id']]['calificacion_b'], '.') + 2), 'calificacion', $key, 'extralaboral_forma_b', 'sin');
                     if ($datosInforme['estres'][$campos['id']]['dimenciones'] != null) {
                         $array[131] = substr($datosInforme['estres'][$campos['id']]['dimenciones'], 0, strpos($datosInforme['estres'][$campos['id']]['dimenciones'], '.') + 2);
                         $array[132] = $this->verRiesgo(substr($datosInforme['estres'][$campos['id']]['dimenciones'], 0, strpos($datosInforme['estres'][$campos['id']]['dimenciones'], '.') + 2), 'calificacion', $key, 'estres_b', 'sin');
@@ -1223,6 +1237,7 @@ class modeloInformes extends conexion
             // $array[135] = $this->calculoDeDeciaml(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2));
             // $array[136] = $this->verRiesgo(substr(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2), 0, strpos(number_format($datosInforme['extralaboral'][$campos['id']]['calificacion_a'], 2), '.') + 2), 'calificacion', $key, 'extralaboral_a', 'sin');
             // ksort($array);
+            file_put_contents("pe.json", json_encode($array).PHP_EOL, FILE_APPEND);
             fputcsv($fp, $array, ';');
             $array = array();
         }
