@@ -1290,6 +1290,9 @@ class modeloInformes extends conexion
     }
 
     private function calculoDeDeciaml($numero){
+        if (strpos($numero, '.') === false) {
+            return $numero . '.0';
+        }
         $varNew = explode('.', $numero);
         $decimal = $varNew[1];
         $decimal = str_split($decimal);
